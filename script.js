@@ -7,18 +7,17 @@ function verificarSemana(){
   let semanaAtual = getNumeroSemana(hoje);
   let semanaSalva = localStorage.getItem("semanaAgenda");
 
-  // Se semana mudou, apagar agenda e mostrar aviso
   if(semanaSalva != semanaAtual){
     localStorage.removeItem("agenda");
     localStorage.setItem("semanaAgenda", semanaAtual);
-    agenda = {}; // garantir tabela limpa
+    agenda = {}; // tabela limpa
     criarTabela();
-
-    // Aviso verde
+    
+    // Aviso verde igual o PDF / site
     let container = document.querySelector(".container");
     let aviso = document.createElement("div");
     aviso.innerText = "📢 Nova semana iniciada – agenda reiniciada automaticamente!";
-    aviso.style.backgroundColor = "#43a047"; // verde site
+    aviso.style.backgroundColor = "rgb(27,94,32)"; // verde do site/PDF
     aviso.style.color = "white";
     aviso.style.padding = "10px";
     aviso.style.borderRadius = "5px";
@@ -115,17 +114,17 @@ function excluir(chave){
   criarTabela();
 }
 
-/* GERAR PDF ESTILIZADO */
+/* GERAR PDF ESTILIZADO COMO SITE */
 function baixarPDF(){
   const { jsPDF } = window.jspdf;
   let doc = new jsPDF();
 
   // Cabeçalho
   doc.setFontSize(16);
-  doc.setTextColor(27, 94, 32); // verde header
+  doc.setTextColor(27,94,32); // verde igual ao site
   doc.text("Agenda do Laboratório", 105, 15, {align: "center"});
   doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
+  doc.setTextColor(0,0,0);
   doc.text("CETI Landri Sales", 105, 22, {align: "center"});
 
   // Montar dados
@@ -146,15 +145,15 @@ function baixarPDF(){
     body: tabelaData,
     theme: "grid",
     headStyles: {
-      fillColor: [27, 94, 32],
-      textColor: [255, 255, 255],
+      fillColor: [27,94,32], // verde header site
+      textColor: [255,255,255],
       halign: 'center'
     },
     bodyStyles: {
       halign: 'center'
     },
     alternateRowStyles: {
-      fillColor: [232, 245, 233]
+      fillColor: [232,245,233] // verde clarinho alternado
     },
     tableLineWidth: 0.5
   });
