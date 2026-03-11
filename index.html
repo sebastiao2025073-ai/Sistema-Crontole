@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,8 +17,14 @@
 <body>
 
 <header>
-<h1>🧪 CETI Landri Sales</h1>
+
+<h1 class="titulo">
+<img src="brasao.jpg" class="logo">
+CETI Landri Sales
+</h1>
+
 <p>Sistema de Agendamento do Laboratório</p>
+
 </header>
 
 <div class="container">
@@ -39,34 +46,38 @@
 </select>
 
 <select id="horario">
-<option>07:00</option>
-<option>08:00</option>
-<option>09:15</option>
-<option>10:15</option>
-<option>11:15</option>
-<option>13:00</option>
-<option>14:00</option>
-<option>15:15</option>
+
+<option value="07:00">07:00 - 08:00</option>
+<option value="08:00">08:00 - 09:00</option>
+<option value="09:15">09:15 - 10:15</option>
+<option value="10:15">10:15 - 11:15</option>
+<option value="11:15">11:15 - 12:00</option>
+<option value="13:00">13:00 - 14:00</option>
+<option value="14:00">14:00 - 15:00</option>
+<option value="15:15">15:15 - 16:15</option>
+
 </select>
 
-<button onclick="agendar()">✅ Agendar</button>
+<button onclick="agendar()">Agendar</button>
 
 </div>
 
 <h2>🧾 Agenda Semanal do Laboratório</h2>
 
-<button class="pdf" onclick="gerarPDF()">📄 Baixar Agenda em PDF</button>
+<button class="pdf" onclick="baixarPDF()">📄 Baixar Agenda em PDF</button>
 
-<table id="tabela">
+<table>
 
 <tr>
-<th>⏰ Horário</th>
+<th>Horário</th>
 <th>Seg</th>
 <th>Ter</th>
 <th>Qua</th>
 <th>Qui</th>
 <th>Sex</th>
 </tr>
+
+<tbody id="tabelaAgenda"></tbody>
 
 </table>
 

@@ -1,69 +1,97 @@
-/* RESET AUTOMÁTICO DA SEMANA */
+/* SENHA PARA EXCLUIR */
 
-function getSemana(){
+const senhaAdmin = "landri26@";
+
+
+/* RESET AUTOMÁTICO SEMANAL */
+
+function numeroSemana(){
 
 let hoje = new Date();
+let inicioAno = new Date(hoje.getFullYear(),0,1);
 
-let inicio = new Date(hoje.getFullYear(),0,1);
+let dias = Math.floor((hoje - inicioAno) / (24*60*60*1000));
 
-let dias = Math.floor((hoje - inicio) / (24*60*60*1000));
-
-return Math.ceil((dias + inicio.getDay()+1)/7);
+return Math.ceil((dias + inicioAno.getDay()+1)/7);
 
 }
 
-let semanaAtual = getSemana();
-
-let semanaSalva = localStorage.getItem("semana");
+let semanaAtual = numeroSemana();
+let semanaSalva = localStorage.getItem("semanaAgenda");
 
 if(semanaSalva != semanaAtual){
 
-localStorage.clear();
-
-localStorage.setItem("semana", semanaAtual);
+localStorage.removeItem("agenda");
+localStorage.setItem("semanaAgenda", semanaAtual);
 
 }
 
-/* CONFIGURAÇÕES */
 
-const dias=["Segunda","Terça","Quarta","Quinta","Sexta"];
+/* HORÁRIOS (apenas início) */
 
-const horarios=["07:00","08:00","09:15","10:15","11:15","13:00","14:00","15:15"];
+const horarios = [
+"07:00",
+"08:00",
+"09:15",
+"10:15",
+"11:15",
+"13:00",
+"14:00",
+"15:15"
+];
 
 
-/* CARREGAR TABELA */
+/* DIAS */
 
-window.onload=function(){
+const dias = ["Seg","Ter","Qua","Qui","Sex"];
 
-let tabela=document.getElementById("tabela");
 
-horarios.forEach(h=>{
+/* CARREGAR AGENDA */
 
-let linha="<tr>";
+let agenda = JSON.parse(localStorage.getItem("agenda")) || {};
 
-linha+=`<td>⏰ ${h}</td>`;
 
-dias.forEach(d=>{
+/* CRIAR TABELA */
 
-let chave=d+"-"+h;
+function criarTabela(){
 
-let ag=localStorage.getItem(chave);
+const tabela = document.getElementById("tabelaAgenda");
 
-if(ag){
+tabela.innerHTML="";
 
-linha+=`<td class="agendamento">📚 ${ag}<br><button class="excluir" onclick="remover('${chave}')">❌ Excluir</button></td>`;
+horarios.forEach(horario => {
+
+let linha = "<tr>";
+
+linha += `<td>${horario}</td>`;
+
+dias.forEach(dia => {
+
+let chave = dia+"-"+horario;
+
+if(agenda[chave]){
+
+linha += `<td class="agendamento">
+
+${agenda[chave]}
+
+<br>
+
+<button class="excluir" onclick="excluir('${chave}')">Excluir</button>
+
+</td>`;
 
 }else{
 
-linha+="<td>—</td>";
+linha += "<td>-</td>";
 
 }
 
 });
 
-linha+="</tr>";
+linha += "</tr>";
 
-tabela.innerHTML+=linha;
+tabela.innerHTML += linha;
 
 });
 
@@ -74,62 +102,69 @@ tabela.innerHTML+=linha;
 
 function agendar(){
 
-let professor=document.getElementById("professor").value;
+let professor = document.getElementById("professor").value;
+let turma = document.getElementById("turma").value;
+let dia = document.getElementById("dia").value;
+let horario = document.getElementById("horario").value;
 
-let turma=document.getElementById("turma").value;
-
-let dia=document.getElementById("dia").value;
-
-let horario=document.getElementById("horario").value;
-
-let chave=dia+"-"+horario;
-
-/* VERIFICAR SE JÁ EXISTE AGENDAMENTO */
-
-let existente = localStorage.getItem(chave);
-
-if(existente){
-
-alert("⚠️ Este horário já está ocupado!\n\nExclua o agendamento atual para cadastrar outro.");
-
+if(professor=="" || turma==""){
+alert("Preencha todos os campos");
 return;
+}
+
+let diaCurto = dia.substring(0,3);
+
+let chave = diaCurto+"-"+horario;
+
+if(agenda[chave]){
+alert("Esse horário já está ocupado.");
+return;
+}
+
+agenda[chave] = professor+" ("+turma+")";
+
+localStorage.setItem("agenda",JSON.stringify(agenda));
+
+criarTabela();
+
+document.getElementById("professor").value="";
+document.getElementById("turma").value="";
 
 }
 
-/* SALVAR */
 
-localStorage.setItem(chave,professor+" ("+turma+")");
+/* EXCLUIR */
 
-location.reload();
+function excluir(chave){
 
+let senha = prompt("Digite a senha para excluir:");
+
+if(senha !== senhaAdmin){
+alert("Senha incorreta!");
+return;
 }
 
+delete agenda[chave];
 
-/* REMOVER */
+localStorage.setItem("agenda",JSON.stringify(agenda));
 
-function remover(chave){
-
-localStorage.removeItem(chave);
-
-location.reload();
+criarTabela();
 
 }
 
 
 /* GERAR PDF */
 
-function gerarPDF(){
+function baixarPDF(){
 
 const { jsPDF } = window.jspdf;
 
 let doc = new jsPDF();
 
 doc.setFontSize(18);
-
 doc.text("Agenda Semanal do Laboratório",14,15);
 
 doc.setFontSize(12);
-
 doc.text("CETI Landri Sales",14,22);
 
 let tabelaData=[];
@@ -142,7 +177,7 @@ dias.forEach(d=>{
 
 let chave=d+"-"+h;
 
-let ag=localStorage.getItem(chave);
+let ag=agenda[chave];
 
 linha.push(ag ? ag : "-");
 
@@ -156,7 +191,7 @@ doc.autoTable({
 
 startY:30,
 
-head:[["Horário","Segunda","Terça","Quarta","Quinta","Sex"]],
+head:[["Horário","Segunda","Terça","Quarta","Quinta","Sexta"]],
 
 body:tabelaData,
 
@@ -171,3 +206,8 @@ styles:{halign:"center"}
 doc.save("agenda-laboratorio.pdf");
 
 }
+
+
+/* INICIAR */
+
+criarTabela();
