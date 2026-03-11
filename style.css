@@ -13,22 +13,6 @@ padding:20px;
 text-align:center;
 }
 
-/* TITULO COM BRASÃO */
-
-.titulo{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:12px;
-margin:0;
-}
-
-.logo{
-width:55px;
-height:55px;
-object-fit:contain;
-}
-
 /* CONTAINER */
 
 .container{
@@ -45,7 +29,7 @@ box-shadow:0 3px 10px rgba(0,0,0,0.1);
 margin-bottom:30px;
 }
 
-/* CAMPOS DO FORMULÁRIO (todos iguais) */
+/* CAMPOS DO FORMULÁRIO */
 
 input,
 select{
@@ -139,11 +123,6 @@ margin:5px 0;
 button{
 width:100%;
 margin-top:8px;
-}
-
-.logo{
-width:40px;
-height:40px;
 }
 
 }

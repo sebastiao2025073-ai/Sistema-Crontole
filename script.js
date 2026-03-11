@@ -1,35 +1,32 @@
-/* SENHA PARA EXCLUIR */
-
 const senhaAdmin = "landri26@";
 
+/* RESET TODO DOMINGO */
 
-/* RESET AUTOMÁTICO SEMANAL */
-
-function numeroSemana(){
+function verificarDomingo(){
 
 let hoje = new Date();
-let inicioAno = new Date(hoje.getFullYear(),0,1);
+let diaSemana = hoje.getDay(); // 0 = domingo
 
-let dias = Math.floor((hoje - inicioAno) / (24*60*60*1000));
+let ultimaLimpeza = localStorage.getItem("ultimaLimpeza");
 
-return Math.ceil((dias + inicioAno.getDay()+1)/7);
+let hojeTexto = hoje.toDateString();
 
-}
-
-let semanaAtual = numeroSemana();
-let semanaSalva = localStorage.getItem("semanaAgenda");
-
-if(semanaSalva != semanaAtual){
+if(diaSemana === 0 && ultimaLimpeza !== hojeTexto){
 
 localStorage.removeItem("agenda");
-localStorage.setItem("semanaAgenda", semanaAtual);
+
+localStorage.setItem("ultimaLimpeza", hojeTexto);
 
 }
 
+}
 
-/* HORÁRIOS (apenas início) */
+verificarDomingo();
 
-const horarios = [
+
+/* HORÁRIOS */
+
+const horarios=[
 "07:00",
 "08:00",
 "09:15",
@@ -40,13 +37,7 @@ const horarios = [
 "15:15"
 ];
 
-
-/* DIAS */
-
-const dias = ["Seg","Ter","Qua","Qui","Sex"];
-
-
-/* CARREGAR AGENDA */
+const dias=["Seg","Ter","Qua","Qui","Sex"];
 
 let agenda = JSON.parse(localStorage.getItem("agenda")) || {};
 
@@ -55,23 +46,23 @@ let agenda = JSON.parse(localStorage.getItem("agenda")) || {};
 
 function criarTabela(){
 
-const tabela = document.getElementById("tabelaAgenda");
+const tabela=document.getElementById("tabelaAgenda");
 
 tabela.innerHTML="";
 
-horarios.forEach(horario => {
+horarios.forEach(horario=>{
 
-let linha = "<tr>";
+let linha="<tr>";
 
-linha += `<td>${horario}</td>`;
+linha+=`<td>${horario}</td>`;
 
-dias.forEach(dia => {
+dias.forEach(dia=>{
 
-let chave = dia+"-"+horario;
+let chave=dia+"-"+horario;
 
 if(agenda[chave]){
 
-linha += `<td class="agendamento">
+linha+=`<td class="agendamento">
 
 ${agenda[chave]}
 
@@ -83,15 +74,15 @@ ${agenda[chave]}
 
 }else{
 
-linha += "<td>-</td>";
+linha+="<td>-</td>";
 
 }
 
 });
 
-linha += "</tr>";
+linha+="</tr>";
 
-tabela.innerHTML += linha;
+tabela.innerHTML+=linha;
 
 });
 
@@ -102,26 +93,26 @@ tabela.innerHTML += linha;
 
 function agendar(){
 
-let professor = document.getElementById("professor").value;
-let turma = document.getElementById("turma").value;
-let dia = document.getElementById("dia").value;
-let horario = document.getElementById("horario").value;
+let professor=document.getElementById("professor").value;
+let turma=document.getElementById("turma").value;
+let dia=document.getElementById("dia").value;
+let horario=document.getElementById("horario").value;
 
-if(professor=="" || turma==""){
+if(professor==""||turma==""){
 alert("Preencha todos os campos");
 return;
 }
 
-let diaCurto = dia.substring(0,3);
+let diaCurto=dia.substring(0,3);
 
-let chave = diaCurto+"-"+horario;
+let chave=diaCurto+"-"+horario;
 
 if(agenda[chave]){
 alert("Esse horário já está ocupado.");
 return;
 }
 
-agenda[chave] = professor+" ("+turma+")";
+agenda[chave]=professor+" ("+turma+")";
 
 localStorage.setItem("agenda",JSON.stringify(agenda));
 
@@ -137,10 +128,10 @@ document.getElementById("turma").value="";
 
 function excluir(chave){
 
-let senha = prompt("Digite a senha para excluir:");
+let senha=prompt("Digite a senha para excluir:");
 
-if(senha !== senhaAdmin){
-alert("Senha incorreta!");
+if(senha!==senhaAdmin){
+alert("Senha incorreta");
 return;
 }
 
@@ -159,13 +150,9 @@ function baixarPDF(){
 
 const { jsPDF } = window.jspdf;
 
-let doc = new jsPDF();
+let doc=new jsPDF();
 
-doc.setFontSize(18);
-doc.text("Agenda Semanal do Laboratório",14,15);
-
-doc.setFontSize(12);
-doc.text("CETI Landri Sales",14,22);
+doc.text("Agenda do Laboratório - CETI Landri Sales",14,15);
 
 let tabelaData=[];
 
@@ -177,9 +164,7 @@ dias.forEach(d=>{
 
 let chave=d+"-"+h;
 
-let ag=agenda[chave];
-
-linha.push(ag ? ag : "-");
+linha.push(agenda[chave]||"-");
 
 });
 
@@ -188,26 +173,13 @@ tabelaData.push(linha);
 });
 
 doc.autoTable({
-
-startY:30,
-
-head:[["Horário","Segunda","Terça","Quarta","Quinta","Sexta"]],
-
-body:tabelaData,
-
-theme:"grid",
-
-headStyles:{fillColor:[27,94,32]},
-
-styles:{halign:"center"}
-
+startY:25,
+head:[["Horário","Seg","Ter","Qua","Qui","Sex"]],
+body:tabelaData
 });
 
 doc.save("agenda-laboratorio.pdf");
 
 }
-
-
-/* INICIAR */
 
 criarTabela();
