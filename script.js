@@ -1,29 +1,16 @@
 const senhaAdmin = "landri26@";
 
-/* RESET SEMANAL E AVISO */
+/* RESET SEMANAL */
 function verificarSemana(){
   let hoje = new Date();
-  let diaSemana = hoje.getDay(); // 0=domingo, 1=segunda...
   let semanaAtual = getNumeroSemana(hoje);
   let semanaSalva = localStorage.getItem("semanaAgenda");
 
   if(semanaSalva != semanaAtual){
     localStorage.removeItem("agenda");
     localStorage.setItem("semanaAgenda", semanaAtual);
-    agenda = {}; // tabela limpa
+    agenda = {}; // limpar tabela
     criarTabela();
-    
-    // Aviso verde igual o PDF / site
-    let container = document.querySelector(".container");
-    let aviso = document.createElement("div");
-    aviso.innerText = "📢 Nova semana iniciada – agenda reiniciada automaticamente!";
-    aviso.style.backgroundColor = "rgb(27,94,32)"; // verde do site/PDF
-    aviso.style.color = "white";
-    aviso.style.padding = "10px";
-    aviso.style.borderRadius = "5px";
-    aviso.style.textAlign = "center";
-    aviso.style.marginBottom = "15px";
-    container.prepend(aviso);
   }
 }
 
