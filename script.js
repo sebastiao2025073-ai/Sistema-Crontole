@@ -1,19 +1,39 @@
 const senhaAdmin = "landri26@";
 
-/* RESET TODO DOMINGO */
-function verificarDomingo(){
+/* RESET SEMANAL E AVISO */
+function verificarSemana(){
   let hoje = new Date();
-  let diaSemana = hoje.getDay(); // 0 = domingo
-  let ultimaLimpeza = localStorage.getItem("ultimaLimpeza");
-  let hojeTexto = hoje.toDateString();
+  let diaSemana = hoje.getDay(); // 0=domingo, 1=segunda...
+  let semanaAtual = getNumeroSemana(hoje);
+  let semanaSalva = localStorage.getItem("semanaAgenda");
 
-  if(diaSemana === 0 && ultimaLimpeza !== hojeTexto){
+  // Se semana mudou, apagar agenda e mostrar aviso
+  if(semanaSalva != semanaAtual){
     localStorage.removeItem("agenda");
-    localStorage.setItem("ultimaLimpeza", hojeTexto);
+    localStorage.setItem("semanaAgenda", semanaAtual);
+    agenda = {}; // garantir tabela limpa
+    criarTabela();
+
+    // Aviso verde
+    let container = document.querySelector(".container");
+    let aviso = document.createElement("div");
+    aviso.innerText = "📢 Nova semana iniciada – agenda reiniciada automaticamente!";
+    aviso.style.backgroundColor = "#43a047"; // verde site
+    aviso.style.color = "white";
+    aviso.style.padding = "10px";
+    aviso.style.borderRadius = "5px";
+    aviso.style.textAlign = "center";
+    aviso.style.marginBottom = "15px";
+    container.prepend(aviso);
   }
 }
 
-verificarDomingo();
+// Função para calcular número da semana
+function getNumeroSemana(data){
+  let inicioAno = new Date(data.getFullYear(),0,1);
+  let dias = Math.floor((data - inicioAno) / (24*60*60*1000));
+  return Math.ceil((dias + inicioAno.getDay()+1)/7);
+}
 
 /* HORÁRIOS */
 const horarios = [
@@ -35,7 +55,6 @@ let agenda = JSON.parse(localStorage.getItem("agenda")) || {};
 function criarTabela(){
   const tabela = document.getElementById("tabelaAgenda");
   tabela.innerHTML = "";
-
   horarios.forEach(horario => {
     let linha = "<tr>";
     linha += `<td>${horario}</td>`;
@@ -144,4 +163,5 @@ function baixarPDF(){
 }
 
 /* INICIALIZAÇÃO */
+verificarSemana();
 criarTabela();
